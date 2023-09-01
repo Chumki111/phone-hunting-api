@@ -22,7 +22,7 @@ const displayPhones = (phones,isShowAll) => {
         showAllContainer.classList.add('hidden')
     };
       
-   console.log('is show all', isShowAll);
+//    console.log('is show all', isShowAll);
     
        
     if(!isShowAll){
@@ -33,7 +33,7 @@ const displayPhones = (phones,isShowAll) => {
     
           
     phones.forEach(element => {
-        console.log(element)
+        // console.log(element)
         const phoneCard = document.createElement('div');
         phoneCard.classList = 'card bg-gray-100 p-4 shadow-xl';
         phoneCard.innerHTML = `
@@ -44,7 +44,7 @@ const displayPhones = (phones,isShowAll) => {
         <h2 class="card-title">${element.phone_name}</h2>
         <p>If a dog chews shoes whose shoes does he choose?</p>
         <div class="card-actions">
-        <button onclick="handleShowDetails()" class="btn btn-primary">Show Details</button>
+        <button onclick="handleShowDetails('${element.slug}');show_my_modal.showModal()" class="btn btn-primary">Show Details</button>
         </div>
        </div>  
         `;
@@ -56,16 +56,35 @@ const displayPhones = (phones,isShowAll) => {
 
 // handle show details button
 
-const handleShowDetails = () => {
-    console.log('show details')
+const handleShowDetails =async (id) => {
+    // console.log('show details',id);
+
+    const res = await fetch(`https://openapi.programming-hero.com/api/phone/${id}`)
+    const data = await res.json();
+    const phone = data.data;
+    showPhoneDetails(phone)
 }
 
+const showPhoneDetails = (phone) => {
+    console.log(phone)
+     const phoneName = document.getElementById('phone-name');
+     phoneName.innerText = phone.name;
+     const showDetailsContainer = document.getElementById('show-details-container');
+     showDetailsContainer.innerHTML = `
+       <img src ="${phone.image}" alt=""/>
+
+       <p><span class="bold">Storage : </span>${phone?.mainFeatures.storage}</p>
+       <p><span>GPS : </span>${phone?.others?.GPS}</p>
+     `
+    // show the modal
+    show_my_modal.showModal()
+}
 // handle searchButton
 const handleSearch = (isShowAll) => {
         toggleLoadingSpinner(true);
         const searchField = document.getElementById('search-field');
         const searchText = searchField.value;
-        // searchField.value = '';
+        searchField.value = '';
         // console.log(searchText);
         loadPhone(searchText,isShowAll)
 }
